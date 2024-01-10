@@ -3563,6 +3563,7 @@ GameObject:
   - component: {fileID: 675717631}
   - component: {fileID: 675717633}
   - component: {fileID: 675717632}
+  - component: {fileID: 675717637}
   - component: {fileID: 675717634}
   - component: {fileID: 675717635}
   - component: {fileID: 675717636}
@@ -3749,6 +3750,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   url: https://hl2-visual-field-default-rtdb.firebaseio.com/
+--- !u!114 &675717637
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 675717630}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c95d2572cb8029c4783c939f126eaaf1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  configPath: Assets/config.json
+  localFilePath: Assets/test.txt
 --- !u!1 &682689679
 GameObject:
   m_ObjectHideFlags: 0
