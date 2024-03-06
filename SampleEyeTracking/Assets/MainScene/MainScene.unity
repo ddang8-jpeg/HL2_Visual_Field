@@ -1601,7 +1601,7 @@ Transform:
   - {fileID: 355240290}
   - {fileID: 1376507976}
   m_Father: {fileID: 0}
-  m_RootOrder: 8
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &301268644
 GameObject:
@@ -2117,7 +2117,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 360903824}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -2130,8 +2130,8 @@ Transform:
   - {fileID: 4412327155731186555}
   - {fileID: 1496463224}
   - {fileID: 824588722}
-  m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_Father: {fileID: 675717631}
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &360903826
 MonoBehaviour:
@@ -3564,9 +3564,9 @@ GameObject:
   - component: {fileID: 675717633}
   - component: {fileID: 675717632}
   - component: {fileID: 675717637}
-  - component: {fileID: 675717638}
   - component: {fileID: 675717634}
   - component: {fileID: 675717635}
+  - component: {fileID: 675717638}
   - component: {fileID: 675717636}
   m_Layer: 0
   m_Name: MixedRealityPlayspace
@@ -3587,6 +3587,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 682689680}
+  - {fileID: 360903825}
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3774,11 +3775,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 675717630}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0918e3137e7291448a71f48c7b92c95b, type: 3}
+  m_Script: {fileID: 11500000, guid: a1483ee4ea276114f9bff62d44ce0d45, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  batch_size: 8
   filename: Assets/points_24.json
-  aLimit: 24
+  a_limit: 0
+  out_pntsDict: Assets/out_dest.txt
+  out_pntsPool: 'Assets/out_pool.txt '
 --- !u!1 &682689679
 GameObject:
   m_ObjectHideFlags: 0
@@ -5034,7 +5038,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6460956429361780250, guid: fda837e43ea42874b8a9941a5968b1d1, type: 3}
       propertyPath: m_RootOrder
-      value: 7
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 6460956429361780250, guid: fda837e43ea42874b8a9941a5968b1d1, type: 3}
       propertyPath: m_LocalPosition.x
@@ -5183,7 +5187,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8503270331930508642, guid: c0931c4da6d91ea429abedb10290dd16, type: 3}
       propertyPath: m_RootOrder
-      value: 6
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 8503270331930508642, guid: c0931c4da6d91ea429abedb10290dd16, type: 3}
       propertyPath: m_LocalPosition.x
@@ -9531,7 +9535,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1863015556
 GameObject:
@@ -10870,7 +10874,7 @@ RectTransform:
   - {fileID: 1153319768}
   - {fileID: 328346291}
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}

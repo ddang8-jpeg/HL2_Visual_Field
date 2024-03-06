@@ -1,0 +1,12 @@
+{
+  "Key": "314998557",
+  "Value": {
+    "point": [
+      -14.43,
+      7.5
+    ],
+    "priority": 1,
+    "history": [],
+    "final_intensity": null
+  }
+}
