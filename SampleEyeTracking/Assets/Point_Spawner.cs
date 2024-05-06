@@ -54,10 +54,10 @@ public class Point_Spawner : MonoBehaviour
   //Currently set to spawn stimuli at random positions every frame 
   void Update()
   {
-    float brightness = Random.Range(0.0f, 1.0f);
-    int x_cord = Random.Range(-200, 200);
-    int y_cord = Random.Range(-200, 200);
-    SpawnObject(x_cord, y_cord, brightness);
+    //float brightness = Random.Range(0.0f, 1.0f);
+    //int x_cord = Random.Range(-200, 200);
+    //int y_cord = Random.Range(-200, 200);
+    //SpawnObject(x_cord, y_cord, brightness);
   }
 
   public void spawnLeft()

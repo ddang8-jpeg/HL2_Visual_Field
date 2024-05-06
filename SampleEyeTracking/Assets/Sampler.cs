@@ -10,17 +10,16 @@ using Newtonsoft.Json.Linq;
 
 public class Sampler
 {
-  public static List<int> IntensityLevels = new List<int>
-        {
-            0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30
-        };
+  private static readonly int[] IntensityLevels = new int[] 
+  {
+    0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30
+  };
 
   public const int Level = 4;
   public const double ConfidenceThreshold = 0.5;
 
   public Dictionary<string, Dictionary<string, object>> pointsDict;
   public Dictionary<string, Dictionary<string, object>> pointsPool;
-  public Dictionary<string, Dictionary<string, object>> sampledPool;
   private int aLimit;
   private int batchNum;
   private int defaultIntensity;
@@ -31,63 +30,67 @@ public class Sampler
     Debug.Log("Building Sampler");
     this.pointsDict = LoadPoints(filename);
     this.pointsPool = BuildPool();
-    this.sampledPool = new Dictionary<string, Dictionary<string, object>>();
     this.aLimit = a_limit;
     this.batchNum = 1;
-    this.defaultIntensity = IntensityLevels[IntensityLevels.Count / 2];
+    this.defaultIntensity = IntensityLevels[IntensityLevels.Length / 2];
     this.countSamples = 0;
   }
 
   private Dictionary<string, Dictionary<string, object>> BuildPool()
   {
     var pool = new Dictionary<string, Dictionary<string, object>>();
-    foreach (var pntId in this.pointsDict["tier_1"].Keys)
+    foreach (var pntId in pointsDict["tier_1"].Keys)
     {
-      // Cast inner dictionary to type
-      var innerDict = ((JObject)this.pointsDict["tier_1"][pntId]).ToObject<Dictionary<string, object>>();
+      var item = pointsDict["tier_1"][pntId] as JObject;
 
-      if (innerDict == null) Debug.LogError($"Failed to cast {pntId} to Dictionary<string, object>");
+      if (item == null)
+      {
+        Debug.LogError($"Casting failed. The object is not a Dictionary<string, object>: {item.GetType()}");
+      }
+      var point = item["point"].ToObject<List<double>>();
 
-      // For each pntId in the keys of this.pointsDict["tier_1"]
-      // Create a new entry in the pool dictionary with pntId as the key
       pool[pntId] = new Dictionary<string, object>
-            {
-                // Set the "point" property of the new entry to the value from this.pointsDict["tier_1"][pntId]["point"]
-                { "point", innerDict["point"] },
+      {
+        { "point", item["point"].ToObject<List<double>>() },
+        { "priority", 1 },
+        { "history", new List<Dictionary<string, object>>() },
+        { "final_intensity", null}
+      };
 
-                // Set the "priority" property to 1
-                { "priority", 1 },
-
-                // Set the "history" property to a new empty list of dictionaries
-                { "history", new List<Dictionary<string, object>>() },
-
-                // Set the "final_intensity" property to null
-                { "final_intensity", null }
-            };
     }
 
+    var midPoint = (aLimit / 2.0, aLimit / 2.0);
 
-    var midPoint = (this.aLimit / 2.0, this.aLimit / 2.0);
-    var tmpId = pool.Keys
-        .OrderBy(x => GetDistance(ConvertToPointTuple((JArray)pool[x]["point"]), midPoint))
-        .First();
-    var tmpPnt = GetPnt(tmpId, this.aLimit);
-    var tmpPnt1 = (-tmpPnt.Item1, tmpPnt.Item2);
-    var tmpPnt2 = (-tmpPnt.Item1, -tmpPnt.Item2);
-    var tmpPnt3 = (tmpPnt.Item1, -tmpPnt.Item2);
-    var tmpId1 = GetId(tmpPnt1, this.aLimit);
-    var tmpId2 = GetId(tmpPnt2, this.aLimit);
-    var tmpId3 = GetId(tmpPnt3, this.aLimit);
-
-    foreach (var pntId in new List<string> { tmpId, tmpId1, tmpId2, tmpId3 })
+    if (!pool.Keys.Any())
     {
-      if (pool.ContainsKey(pntId))
+      Debug.LogError("No keys available in the pool.");
+      return new Dictionary<string, Dictionary<string, object>>(); 
+    }
+
+    var tmpId = pool.Keys.OrderBy(id => {
+      var point = pool[id]["point"] as List<double>;
+      var pointTuple = (point[0], point[1]);
+      return GetDistance(pointTuple, midPoint);
+    }).First();
+
+    var tmpPoint = GetPnt(tmpId, aLimit);
+    var tmpPoint1 = (-tmpPoint.Item1, tmpPoint.Item2);
+    var tmpPoint2 = (-tmpPoint.Item1, -tmpPoint.Item2);
+    var tmpPoint3 = (tmpPoint.Item1, -tmpPoint.Item2);
+    var tmpId1 = GetId(tmpPoint1, aLimit);
+    var tmpId2 = GetId(tmpPoint2, aLimit);
+    var tmpId3 = GetId(tmpPoint3, aLimit);
+
+    foreach (var id in new[] { tmpId, tmpId1, tmpId2, tmpId3 })
+    {
+
+      if (pool.ContainsKey(id))
       {
-        pool[pntId]["priority"] = 3;
+        pool[id]["priority"] = 3;
       }
       else
       {
-        Debug.LogError($"Key {pntId} not present in the pool dictionary.");
+        Debug.LogError($"Key {id} not present in the pool dictionary.");
       }
     }
 
@@ -173,11 +176,11 @@ public class Sampler
       {
         this.pointsPool[id]["priority"] = (int)this.pointsPool[id]["priority"] + 1;
 
-        if ((int)resp["intensity"] >= IntensityLevels[IntensityLevels.Count - 2])
+        if ((int)resp["intensity"] >= IntensityLevels[IntensityLevels.Length - 2])
         {
           if (!((bool)resp["see"]))
           {
-            this.pointsPool[id]["final_intensity"] = IntensityLevels[IntensityLevels.Count - 1];
+            this.pointsPool[id]["final_intensity"] = IntensityLevels[IntensityLevels.Length - 1];
             this.pointsPool[id]["priority"] = 0;
           }
         }
@@ -274,17 +277,17 @@ public class Sampler
 
   private int GetIntensityFromNeighbors(string pntId)
   {
-    var innerDict = (Dictionary<string, object>)this.pointsDict["tier_1"][pntId];
-    var nghbrs = (List<string>)innerDict["n_tier_1"];
+    var innerDict = this.pointsDict["tier_1"][pntId] as JObject;
+    var nghbrs = innerDict["n_tier_1"];
     var intensities = new List<int>();
     var sampled = this.pointsPool.Keys.Where(_id => (int)this.pointsPool[_id]["priority"] == 0).ToList();
     foreach (var _id in nghbrs)
     {
-      if (sampled.Contains(_id))
+      if (sampled.Contains(_id.ToString()))
       {
-        if (this.pointsPool[_id]["final_intensity"] != null)
+        if (this.pointsPool[_id.ToString()]["final_intensity"] != null)
         {
-          intensities.Add((int)this.pointsPool[_id]["final_intensity"]);
+          intensities.Add((int)this.pointsPool[_id.ToString()]["final_intensity"]);
         }
       }
     }
@@ -297,7 +300,7 @@ public class Sampler
     }
     else
     {
-      return IntensityLevels[IntensityLevels.Count / 2];
+      return IntensityLevels[IntensityLevels.Length / 2];
     }
   }
 
@@ -320,7 +323,13 @@ public class Sampler
 
   private string GetId((double, double) point, int aLimit)
   {
-    return $"{(int)((aLimit + Mathf.Round((float)point.Item2 * 100) / 100) * 10000000 + 100 * Mathf.Round((float)point.Item1 * 100) / 100)}";
+    var id = (int)((aLimit + Math.Round((double)point.Item2 * 100) / 100) * 10000000 + 100 * Math.Round((double)point.Item1 * 100) / 100);
+    if (id < 0)
+    {
+      Debug.LogError("Id cannot be negative number: " + id 
+        + "\nitem2: " + (double)point.Item2 + "\nitem1: " + (double)point.Item1);
+    }
+    return $"id";
   }
 
   private List<string> OrderBatch(List<string> pnts)
@@ -345,7 +354,7 @@ public class Sampler
   // Calculates Euclidean distance between two points
   private double GetDistance((double, double) p1, (double, double) p2)
   {
-    return Mathf.Sqrt(Mathf.Pow((float)(p1.Item1 - p2.Item1), 2) + Mathf.Pow((float)(p1.Item2 - p2.Item2), 2));
+    return Math.Sqrt(Math.Pow((double)(p1.Item1 - p2.Item1), 2) + Math.Pow((double)(p1.Item2 - p2.Item2), 2));
   }
 
 

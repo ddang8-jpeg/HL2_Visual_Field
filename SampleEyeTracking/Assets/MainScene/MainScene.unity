@@ -3759,7 +3759,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 675717630}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c95d2572cb8029c4783c939f126eaaf1, type: 3}
   m_Name: 
@@ -3778,11 +3778,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1483ee4ea276114f9bff62d44ce0d45, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  inputTimeDuration: 1
   batch_size: 8
   filename: Assets/points_24.json
-  a_limit: 0
-  out_pntsDict: Assets/out_dest.txt
-  out_pntsPool: 'Assets/out_pool.txt '
+  aLimit: 24
+  outPntsDict: Assets/out_dest.txt
+  outPntsPool: Assets/out_pool.txt
 --- !u!1 &682689679
 GameObject:
   m_ObjectHideFlags: 0
